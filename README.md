@@ -15,6 +15,19 @@ The Dev Risk Dashboard calculates a weighted risk score using multiple quality i
 - 🔴 High Risk  
 
 It also maintains historical tracking and visualizes risk trends using interactive charts.
+---
+
+## 📸 Screenshots
+
+### Dashboard Interface
+![Dashboard](dashboard.png)
+
+---
+
+### Risk Calculation & Trend Visualization
+![Risk Result](dashboard-result.png)
+
+---
 
 ---
 
