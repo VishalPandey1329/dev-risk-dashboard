@@ -19,12 +19,42 @@ function calculateRisk(data) {
   return risk;
 }
 
+function validateRiskPayload(body) {
+  const requiredFields = ["codeChurn", "complexity", "bugs", "hasTests"];
+
+  for (const field of requiredFields) {
+    if (!(field in body)) {
+      return `Missing required field: ${field}`;
+    }
+  }
+
+  const numericFields = ["codeChurn", "complexity", "bugs"];
+
+  for (const field of numericFields) {
+    const value = body[field];
+
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      return `${field} must be a valid number`;
+    }
+
+    if (value < 0) {
+      return `${field} cannot be negative`;
+    }
+  }
+
+  if (typeof body.hasTests !== "boolean") {
+    return "hasTests must be a boolean";
+  }
+
+  return null;
+}
+
 // -------- API ROUTE --------
 app.post("/risk", (req, res) => {
-  const { codeChurn, complexity, bugs } = req.body;
+  const validationError = validateRiskPayload(req.body);
 
-  if (codeChurn < 0 || complexity < 0 || bugs < 0) {
-    return res.status(400).json({ error: "Values cannot be negative" });
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
   }
 
   const riskScore = calculateRisk(req.body);
@@ -33,7 +63,7 @@ app.post("/risk", (req, res) => {
   if (riskScore > 70) riskLevel = "High";
   else if (riskScore > 40) riskLevel = "Medium";
 
-  res.json({ riskScore, riskLevel });
+  return res.json({ riskScore, riskLevel });
 });
 
 // -------- SERVE REACT BUILD --------

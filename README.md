@@ -86,62 +86,90 @@ The system includes backend validation to prevent invalid inputs such as negativ
 
 ---
 
+
+## ⚙️ Environment Configuration
+
+Create `client/.env` (or `client/.env.local`) to configure backend URL:
+
+```bash
+REACT_APP_API_BASE_URL=http://localhost:5000
+```
+
+If not provided, the app defaults to `http://localhost:5000`.
+
 ## 🖥️ How To Run Locally
 
-### 1️⃣ Clone the Repository
+### 1️⃣ Clone the repository
 
 ```bash
 git clone https://github.com/VishalPandey1329/dev-risk-dashboard.git
 cd dev-risk-dashboard
-2️⃣ Install Backend Dependencies
+```
+
+### 2️⃣ Install dependencies
+
+```bash
 npm install
-3️⃣ Install Frontend Dependencies
 cd client
 npm install
-4️⃣ Start Backend Server
-node server.js
+cd ..
+```
 
-Backend runs on:
+### 3️⃣ Start backend (Terminal 1)
 
-http://localhost:5000
-5️⃣ Start Frontend
+```bash
+npm start
+```
+
+Backend runs on `http://localhost:5000`.
+
+### 4️⃣ Start frontend (Terminal 2)
+
+```bash
 cd client
 npm start
+```
 
-Frontend runs on:
+Frontend runs on `http://localhost:3000`.
 
-http://localhost:3000
-🚀 Future Improvements
+### 5️⃣ Run tests/checks
 
-Persistent database storage (MongoDB)
+```bash
+# Frontend tests
+cd client
+CI=true npm test -- --watchAll=false
 
-Authentication system
+# Basic JS syntax checks (backend + frontend)
+cd ..
+node --check server.js
+node --check client/src/App.js
+node --check client/src/App.test.js
+```
 
-Cloud deployment
+---
 
-CI/CD integration
+## 🚀 Future Improvements
 
-Customizable risk weight configuration
+- Persistent database storage (MongoDB)
+- Authentication system
+- Cloud deployment
+- CI/CD integration
+- Customizable risk weight configuration
 
-🎯 Learning Outcomes
+## 🎯 Learning Outcomes
 
 Through this project, I gained hands-on experience in:
 
-Full-stack development
+- Full-stack development
+- REST API design
+- React state management
+- Backend validation practices
+- Data visualization
+- Git workflow and repository management
 
-REST API design
+## 👨‍💻 Author
 
-React state management
-
-Backend validation practices
-
-Data visualization
-
-Git workflow and repository management
-
-👨‍💻 Author
-
-Vishal Pandey
+Vishal Pandey  
 GitHub: https://github.com/VishalPandey1329
 
 ⭐ If you found this project interesting, feel free to star the repository!
