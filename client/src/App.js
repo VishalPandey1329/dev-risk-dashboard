@@ -10,6 +10,7 @@ import {
   Legend
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import "./App.css";
 
 ChartJS.register(
   LineElement,
@@ -21,6 +22,8 @@ ChartJS.register(
   Legend
 );
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 function App() {
   const [codeChurn, setCodeChurn] = useState(0);
   const [complexity, setComplexity] = useState(0);
@@ -31,7 +34,7 @@ function App() {
 
   const calculateRisk = async () => {
     try {
-      const response = await fetch("http://localhost:5000/risk", {
+      const response = await fetch(`${API_BASE_URL}/risk`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +43,7 @@ function App() {
           codeChurn: Number(codeChurn),
           complexity: Number(complexity),
           bugs: Number(bugs),
-          hasTests: hasTests,
+          hasTests,
         }),
       });
 
@@ -60,16 +63,15 @@ function App() {
           time: new Date().toLocaleTimeString(),
         },
       ]);
-
     } catch (error) {
       alert("Backend not reachable");
     }
   };
 
-  const getColor = (level) => {
-    if (level === "High") return "red";
-    if (level === "Medium") return "orange";
-    return "green";
+  const getColorClass = (level) => {
+    if (level === "High") return "risk-high";
+    if (level === "Medium") return "risk-medium";
+    return "risk-low";
   };
 
   const chartData = {
@@ -78,86 +80,84 @@ function App() {
       {
         label: "Risk Score Trend",
         data: history.map((item) => item.riskScore),
-        borderColor: "blue",
-        backgroundColor: "lightblue",
+        borderColor: "#66a3ff",
+        backgroundColor: "rgba(102, 163, 255, 0.2)",
         tension: 0.3,
       },
     ],
   };
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      padding: "40px",
-      fontFamily: "Arial",
-      backgroundColor: "#f5f5f5",
-      minHeight: "100vh"
-    }}>
-      <div style={{
-        width: "800px",
-        backgroundColor: "white",
-        padding: "30px",
-        borderRadius: "10px",
-        boxShadow: "0 0 15px rgba(0,0,0,0.1)"
-      }}>
-        <h1 style={{ textAlign: "center" }}>🚀 Dev Risk Dashboard</h1>
+    <main className="dashboard-page">
+      <section className="dashboard-card">
+        <h1>🚀 Dev Risk Dashboard</h1>
+        <p className="subtitle">Analyze deployment risk with a clean, dark, and focused interface.</p>
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Code Churn:</label>
-          <input type="number" value={codeChurn} onChange={(e) => setCodeChurn(e.target.value)} />
+        <div className="form-grid">
+          <div className="form-field">
+            <label htmlFor="codeChurn">Code Churn</label>
+            <input
+              id="codeChurn"
+              type="number"
+              value={codeChurn}
+              onChange={(e) => setCodeChurn(e.target.value)}
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="complexity">Complexity</label>
+            <input
+              id="complexity"
+              type="number"
+              value={complexity}
+              onChange={(e) => setComplexity(e.target.value)}
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="bugs">Number of Bugs</label>
+            <input
+              id="bugs"
+              type="number"
+              value={bugs}
+              onChange={(e) => setBugs(e.target.value)}
+            />
+          </div>
+
+          <div className="form-field checkbox-field">
+            <label htmlFor="hasTests">
+              <input
+                id="hasTests"
+                type="checkbox"
+                checked={hasTests}
+                onChange={(e) => setHasTests(e.target.checked)}
+              />
+              Has Automated Tests
+            </label>
+          </div>
         </div>
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Complexity:</label>
-          <input type="number" value={complexity} onChange={(e) => setComplexity(e.target.value)} />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Number of Bugs:</label>
-          <input type="number" value={bugs} onChange={(e) => setBugs(e.target.value)} />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>
-            <input type="checkbox" checked={hasTests} onChange={(e) => setHasTests(e.target.checked)} />
-            Has Tests?
-          </label>
-        </div>
-
-        <button onClick={calculateRisk} style={{
-          marginTop: "10px",
-          padding: "8px 15px",
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer"
-        }}>
+        <button className="calculate-btn" onClick={calculateRisk}>
           Calculate Risk
         </button>
 
         {riskData && (
-          <div style={{ marginTop: "20px" }}>
-            <h2 style={{ color: getColor(riskData.riskLevel) }}>
-              Risk Score: {riskData.riskScore}
-            </h2>
-            <h3 style={{ color: getColor(riskData.riskLevel) }}>
-              Risk Level: {riskData.riskLevel}
-            </h3>
+          <div className="result-card">
+            <h2 className={getColorClass(riskData.riskLevel)}>Risk Score: {riskData.riskScore}</h2>
+            <h3 className={getColorClass(riskData.riskLevel)}>Risk Level: {riskData.riskLevel}</h3>
           </div>
         )}
 
         {history.length > 0 && (
           <>
-            <div style={{ marginTop: "30px" }}>
+            <div className="panel chart-panel">
               <h2>📊 Risk Trend</h2>
               <Line data={chartData} />
             </div>
 
-            <div style={{ marginTop: "30px" }}>
+            <div className="panel">
               <h2>📋 Risk History</h2>
-              <table border="1" cellPadding="10" style={{ width: "100%", textAlign: "center" }}>
+              <table>
                 <thead>
                   <tr>
                     <th>Time</th>
@@ -170,9 +170,7 @@ function App() {
                     <tr key={index}>
                       <td>{item.time}</td>
                       <td>{item.riskScore}</td>
-                      <td style={{ color: getColor(item.riskLevel) }}>
-                        {item.riskLevel}
-                      </td>
+                      <td className={getColorClass(item.riskLevel)}>{item.riskLevel}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -180,8 +178,8 @@ function App() {
             </div>
           </>
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 
